@@ -6,11 +6,15 @@
 </head>
 <body>
 
-<h2>Orders</h2>
+<div class="container">
 
-<button onclick="load()">Load</button>
+<h2>📊 Your Orders</h2>
+
+<button class="btn" onclick="load()">Load Orders</button>
 
 <div id="list"></div>
+
+</div>
 
 <script>
 async function load() {
@@ -20,6 +24,7 @@ async function load() {
   list.innerHTML = data.map(o => `
     <div class="card">
       <b>${o.id}</b><br>
+      Network: ${o.network}<br>
       Status: ${o.status}<br>
       Payment: ${o.paymentStatus}
     </div>

@@ -1,20 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Order</title>
+  <title>Buy Data</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Place Order</h2>
+<nav>
+  <a href="/">Home</a>
+</nav>
 
-<input id="customerId" placeholder="Customer ID">
+<div class="container">
+
+<h2>📦 Data Packages</h2>
+
+<div class="grid">
+
+<div class="card">MTN 1GB - GH₵6</div>
+<div class="card">MTN 2GB - GH₵11</div>
+<div class="card">MTN 5GB - GH₵25</div>
+<div class="card">Telecel 1GB - GH₵5</div>
+
+</div>
+
+<div class="card">
+<h3>Place Order</h3>
+
+<input id="customerId" placeholder="Customer ID" style="width:100%;padding:10px;">
+<br><br>
+
 <input id="network" placeholder="Network">
 <input id="amount" placeholder="Amount">
+<br><br>
 
-<button onclick="order()">Submit</button>
+<button class="btn" onclick="order()">Buy Now</button>
 
 <p id="out"></p>
+</div>
+
+</div>
 
 <script>
 async function order() {
@@ -30,7 +54,7 @@ async function order() {
 
   const data = await res.json();
 
-  out.innerHTML = "Order created ✔<br>ID: <b>" + data.order.id + "</b>";
+  out.innerHTML = "Order ID: <b>" + data.order.id + "</b>";
 }
 </script>
 

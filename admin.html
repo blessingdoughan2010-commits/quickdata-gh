@@ -6,11 +6,15 @@
 </head>
 <body>
 
-<h2>Admin Panel</h2>
+<div class="container">
 
-<button onclick="load()">Load Orders</button>
+<h2>🔐 Admin Dashboard</h2>
+
+<button class="btn" onclick="load()">Load Orders</button>
 
 <div id="orders"></div>
+
+</div>
 
 <script>
 async function load() {
@@ -21,12 +25,12 @@ async function load() {
     <div class="card">
       <b>${o.id}</b><br>
       ${o.status}<br>
-      <button onclick="mark('${o.id}')">Mark Delivered</button>
+      <button class="btn" onclick="update('${o.id}')">Mark Delivered</button>
     </div>
   `).join("");
 }
 
-async function mark(id) {
+async function update(id) {
   await fetch("/api/order/" + id, {
     method: "PUT",
     headers: {"Content-Type":"application/json"},
