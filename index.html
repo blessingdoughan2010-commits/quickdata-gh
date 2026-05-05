@@ -91,6 +91,7 @@ button:hover {
   <p>Send MoMo to:</p>
   <h3>0534337934</h3>
   <p id="details"></p>
+  <p id="orderid" style="color:#22c55e;"></p>
   <button onclick="confirmPayment()">I Have Paid</button>
 </div>
 
@@ -98,6 +99,11 @@ button:hover {
 
 <script>
 let selected = "";
+let orderID = "";
+
+function generateID() {
+  return "QDG-" + Math.floor(10000 + Math.random() * 90000);
+}
 
 function selectBundle(bundle) {
   let phone = document.getElementById("phone").value;
@@ -108,10 +114,14 @@ function selectBundle(bundle) {
   }
 
   selected = bundle;
+  orderID = generateID();
 
   document.getElementById("payment").style.display = "block";
   document.getElementById("details").innerText =
     "You are buying " + bundle + " for " + phone;
+
+  document.getElementById("orderid").innerText =
+    "Your Order ID: " + orderID;
 }
 
 function confirmPayment() {
@@ -119,9 +129,10 @@ function confirmPayment() {
   let number = "233534337934";
 
   let msg = "NEW ORDER 🚀%0A" +
+            "Order ID: " + orderID + "%0A" +
             "Bundle: " + selected + "%0A" +
             "Customer Number: " + phone + "%0A" +
-            "Status: Paid (User confirmed)";
+            "Status: Paid";
 
   window.open("https://wa.me/" + number + "?text=" + msg, "_blank");
 }
