@@ -1,142 +1,29 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>QuickData GH</title>
-
-<style>
-body {
-  font-family: Arial;
-  background: #0f172a;
-  color: white;
-  text-align: center;
-  padding: 20px;
-}
-
-h1 {
-  color: #22c55e;
-}
-
-.card {
-  background: #1e293b;
-  padding: 20px;
-  margin: 15px;
-  border-radius: 10px;
-  display: inline-block;
-  width: 230px;
-}
-
-input {
-  padding: 10px;
-  margin-top: 10px;
-  width: 90%;
-  border-radius: 5px;
-  border: none;
-}
-
-button {
-  background: #22c55e;
-  border: none;
-  padding: 10px;
-  margin-top: 10px;
-  color: white;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 100%;
-}
-
-button:hover {
-  background: #16a34a;
-}
-
-#payment {
-  margin-top: 30px;
-  background: #1e293b;
-  padding: 20px;
-  border-radius: 10px;
-}
-</style>
-
+  <title>QuickData GH</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-<h1>⚡ QuickData GH</h1>
-<p>Fast & Reliable Data Delivery in Ghana</p>
-
-<input type="text" id="phone" placeholder="Enter your number (e.g. 054XXXXXXX)">
+<h1>📡 QuickData GH</h1>
 
 <div class="card">
-  <h2>1GB - GHS 7</h2>
-  <button onclick="selectBundle('1GB')">Select</button>
-</div>
-
-<div class="card">
-  <h2>2GB - GHS 12</h2>
-  <button onclick="selectBundle('2GB')">Select</button>
+  <h2>Register</h2>
+  <input id="phone" placeholder="Enter phone number">
+  <button onclick="register()">Get Customer ID</button>
+  <p id="cid"></p>
 </div>
 
 <div class="card">
-  <h2>3GB - GHS 17</h2>
-  <button onclick="selectBundle('3GB')">Select</button>
+  <h2>Buy Data</h2>
+  <input id="customerId" placeholder="Customer ID">
+  <input id="network" placeholder="Network (MTN, Telecel, AT)">
+  <input id="amount" placeholder="Amount (GH₵)">
+  <button onclick="order()">Place Order</button>
+  <p id="result"></p>
 </div>
 
-<div class="card">
-  <h2>4GB - GHS 22</h2>
-  <button onclick="selectBundle('4GB')">Select</button>
-</div>
-
-<div id="payment" style="display:none;">
-  <h2>💰 Payment</h2>
-  <p>Send MoMo to:</p>
-  <h3>0534337934</h3>
-  <p id="details"></p>
-  <p id="orderid" style="color:#22c55e;"></p>
-  <button onclick="confirmPayment()">I Have Paid</button>
-</div>
-
-<p>⚡ Delivered in less than 1 minute</p>
-
-<script>
-let selected = "";
-let orderID = "";
-
-function generateID() {
-  return "QDG-" + Math.floor(10000 + Math.random() * 90000);
-}
-
-function selectBundle(bundle) {
-  let phone = document.getElementById("phone").value;
-
-  if(phone === "") {
-    alert("Enter your phone number first!");
-    return;
-  }
-
-  selected = bundle;
-  orderID = generateID();
-
-  document.getElementById("payment").style.display = "block";
-  document.getElementById("details").innerText =
-    "You are buying " + bundle + " for " + phone;
-
-  document.getElementById("orderid").innerText =
-    "Your Order ID: " + orderID;
-}
-
-function confirmPayment() {
-  let phone = document.getElementById("phone").value;
-  let number = "233534337934";
-
-  let msg = "NEW ORDER 🚀%0A" +
-            "Order ID: " + orderID + "%0A" +
-            "Bundle: " + selected + "%0A" +
-            "Customer Number: " + phone + "%0A" +
-            "Status: Paid";
-
-  window.open("https://wa.me/" + number + "?text=" + msg, "_blank");
-}
-</script>
-
+<script src="app.js"></script>
 </body>
 </html>
