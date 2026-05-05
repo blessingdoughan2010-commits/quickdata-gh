@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>QuickData GH</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #0f172a;
+      color: white;
+      text-align: center;
+      padding: 20px;
+    }
+    h1 {
+      color: #22c55e;
+    }
+    .card {
+      background: #1e293b;
+      padding: 20px;
+      margin: 15px;
+      border-radius: 10px;
+      display: inline-block;
+      width: 220px;
+    }
+    button {
+      background: #22c55e;
+      border: none;
+      padding: 10px;
+      margin-top: 10px;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 100%;
+    }
+    button:hover {
+      background: #16a34a;
+    }
+    .pay-box {
+      margin-top: 30px;
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>⚡ QuickData GH</h1>
+<p>Fast & Reliable Data Delivery in Ghana</p>
+
+<div class="card">
+  <h2>1GB</h2>
+  <p>GHS 6</p>
+  <button onclick="order('1GB')">Order</button>
+</div>
+
+<div class="card">
+  <h2>2GB</h2>
+  <p>GHS 11</p>
+  <button onclick="order('2GB')">Order</button>
+</div>
+
+<div class="card">
+  <h2>3GB</h2>
+  <p>GHS 16</p>
+  <button onclick="order('3GB')">Order</button>
+</div>
+
+<div class="card">
+  <h2>4GB</h2>
+  <p>GHS 21</p>
+  <button onclick="order('4GB')">Order</button>
+</div>
+
+<div class="pay-box">
+  <h2>💰 Payment</h2>
+  <p>Send MoMo to:</p>
+  <h3>0534337934</h3>
+  <p>After payment, click below 👇</p>
+  <button onclick="paid()">I Have Paid</button>
+</div>
+
+<p>⚡ Delivered in less than 1 minute</p>
+
+<script>
+let selectedBundle = "";
+
+function order(bundle) {
+  selectedBundle = bundle;
+  alert("You selected " + bundle + ". Now send payment, then click 'I Have Paid'");
+}
+
+function paid() {
+  let number = "233534337934";
+  let message = "Hello, I have paid for " + selectedBundle;
+  let url = "https://wa.me/" + number + "?text=" + encodeURIComponent(message);
+  window.open(url, "_blank");
+}
+</script>
+
+</body>
+</html>
