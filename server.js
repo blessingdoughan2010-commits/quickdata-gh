@@ -10,14 +10,14 @@ app.use(express.json());
 app.use(express.static("public"));
 
 app.use(session({
-  secret: "quickdata_secret",
+  secret: "quickdata_final_system",
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false
 }));
 
 const DB_FILE = "./db.json";
 
-/* ---------------- DB ---------------- */
+/* DB */
 function readDB() {
   return JSON.parse(fs.readFileSync(DB_FILE));
 }
@@ -26,7 +26,7 @@ function writeDB(data) {
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-/* ---------------- REGISTER ---------------- */
+/* REGISTER */
 app.post("/api/register", (req, res) => {
   const db = readDB();
 
@@ -41,7 +41,7 @@ app.post("/api/register", (req, res) => {
   res.json(customer);
 });
 
-/* ---------------- LOGIN ---------------- */
+/* LOGIN */
 app.post("/api/login", (req, res) => {
   const db = readDB();
 
@@ -54,7 +54,7 @@ app.post("/api/login", (req, res) => {
   res.json({ message: "Login successful", user });
 });
 
-/* ---------------- ORDER ---------------- */
+/* ORDER */
 app.post("/api/order", (req, res) => {
   const db = readDB();
 
@@ -64,7 +64,6 @@ app.post("/api/order", (req, res) => {
     network: req.body.network,
     amount: req.body.amount,
     price: req.body.amount + 1,
-
     status: "pending",
     paymentStatus: "unpaid",
     createdAt: new Date()
@@ -73,124 +72,99 @@ app.post("/api/order", (req, res) => {
   db.orders.push(order);
   writeDB(db);
 
-  res.json({ message: "Order created", order });
+  res.json({ order });
 });
 
-/* ---------------- PAYMENT VERIFY ---------------- */
+/* PAYMENT VERIFY */
 app.post("/api/payment/verify", (req, res) => {
   const db = readDB();
 
   const order = db.orders.find(o => o.id === req.body.orderId);
-
-  if (!order) return res.status(404).json({ error: "Order not found" });
+  if (!order) return res.status(404).json({ error: "Not found" });
 
   order.paymentStatus = "paid";
   order.status = "processing";
 
   writeDB(db);
 
-  res.json({ message: "Payment confirmed", order });
-});
-
-/* ---------------- CUSTOMER ORDERS ---------------- */
-app.get("/api/my-orders", (req, res) => {
-  if (!req.session.user) {
-    return res.status(401).json({ error: "Not logged in" });
-  }
-
-  const db = readDB();
-
-  const orders = db.orders.filter(
-    o => o.customerId === req.session.user.id
-  );
-
-  res.json(orders);
-});
-
-/* ---------------- ALL ORDERS (ADMIN) ---------------- */
-app.get("/api/orders", (req, res) => {
-  res.json(readDB().orders);
-});
-
-/* ---------------- UPDATE ORDER ---------------- */
-app.put("/api/order/:id", (req, res) => {
-  const db = readDB();
-
-  const order = db.orders.find(o => o.id === req.params.id);
-
-  if (!order) return res.status(404).json({ error: "Not found" });
-
-  order.status = req.body.status;
-
-  writeDB(db);
-
   res.json(order);
 });
 
-/* ---------------- SUPPORT BOT ---------------- */
-app.post("/api/support", (req, res) => {
-  const msg = req.body.message.toLowerCase();
-
-  let reply = "Sorry, I don't understand.";
-
-  if (msg.includes("price")) {
-    reply = "Data starts from GH₵4 depending on network.";
-  }
-
-  if (msg.includes("order")) {
-    reply = "Go to order page and use your Customer ID.";
-  }
-
-  if (msg.includes("time")) {
-    reply = "Orders are delivered within 1–2 minutes.";
-  }
-
-  res.json({ reply });
-});
-
-/* ---------------- REVENUE ---------------- */
-app.get("/api/revenue", (req, res) => {
+/* MY ORDERS */
+app.get("/api/my-orders", (req, res) => {
   const db = readDB();
-
-  const delivered = db.orders.filter(o => o.status === "delivered");
-
-  const revenue = delivered.reduce((sum, o) => sum + o.price, 0);
-
-  res.json({
-    totalOrders: delivered.length,
-    revenue
-  });
+  res.json(db.orders);
 });
 
-/* ---------------- AUTO ENGINE ---------------- */
-function sendWhatsApp(phone, message) {
-  console.log("📲 WhatsApp:", phone, message);
+/* ADMIN LOGIN */
+app.post("/api/admin/login", (req, res) => {
+  if (req.body.username === "admin" && req.body.password === "1234") {
+    req.session.admin = true;
+    return res.json({ success: true });
+  }
+  res.status(401).json({ success: false });
+});
+
+/* PROTECT ADMIN */
+function admin(req, res, next) {
+  if (!req.session.admin) return res.status(403).end();
+  next();
 }
 
-function processOrders() {
+/* ORDERS */
+app.get("/api/orders", admin, (req, res) => {
+  res.json(readDB().orders);
+});
+
+/* STATS */
+app.get("/api/stats", admin, (req, res) => {
   const db = readDB();
 
-  db.orders.forEach(order => {
-    if (order.paymentStatus === "paid" && order.status === "processing") {
-      order.status = "delivered";
+  const totalOrders = db.orders.length;
+  const delivered = db.orders.filter(o => o.status === "delivered").length;
+  const pending = db.orders.filter(o => o.status !== "delivered").length;
+  const revenue = db.orders
+    .filter(o => o.status === "delivered")
+    .reduce((s, o) => s + o.price, 0);
 
-      const customer = db.customers.find(c => c.id === order.customerId);
+  res.json({ totalOrders, delivered, pending, revenue });
+});
 
-      if (customer) {
-        sendWhatsApp(
-          customer.phone,
-          `✅ Order ${order.id} delivered successfully.`
-        );
-      }
+/* PROMO DRAW */
+app.get("/api/promo/draw", (req, res) => {
+  const db = readDB();
+
+  const users = db.customers;
+  const winner = users[Math.floor(Math.random() * users.length)];
+
+  const result = {
+    id: "PROMO-" + Date.now(),
+    winnerId: winner.id,
+    phone: winner.phone,
+    date: new Date()
+  };
+
+  db.promos = db.promos || [];
+  db.promos.push(result);
+
+  writeDB(db);
+
+  res.json(result);
+});
+
+/* AUTO DELIVERY */
+function process() {
+  const db = readDB();
+
+  db.orders.forEach(o => {
+    if (o.paymentStatus === "paid" && o.status === "processing") {
+      o.status = "delivered";
     }
   });
 
   writeDB(db);
 }
 
-setInterval(processOrders, 8000);
+setInterval(process, 7000);
 
-/* ---------------- START ---------------- */
-app.listen(PORT, () => {
-  console.log("🚀 QuickData GH PRO SYSTEM RUNNING");
-});
+app.listen(PORT, () => console.log("QuickData GH LIVE 🚀"));
