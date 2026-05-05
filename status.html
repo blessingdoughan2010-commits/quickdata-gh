@@ -6,9 +6,9 @@
 </head>
 <body>
 
-<h2>Order Status</h2>
+<h2>Orders</h2>
 
-<button onclick="load()">Load Orders</button>
+<button onclick="load()">Load</button>
 
 <div id="list"></div>
 
@@ -21,7 +21,7 @@ async function load() {
     <div class="card">
       <b>${o.id}</b><br>
       Status: ${o.status}<br>
-      Network: ${o.network}
+      Payment: ${o.paymentStatus}
     </div>
   `).join("");
 }

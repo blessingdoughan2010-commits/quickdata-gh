@@ -6,29 +6,39 @@
 </head>
 <body>
 
-<nav>
-  <a href="/">Home</a>
-</nav>
-
 <h2>Register</h2>
 
-<input id="phone" placeholder="Enter phone">
+<input id="phone" placeholder="Enter phone number">
 <button onclick="register()">Get ID</button>
 
 <p id="out"></p>
 
 <script>
 async function register() {
-  const res = await fetch("/api/register", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ phone: phone.value })
-  });
+  const phone = document.getElementById("phone").value;
+  const out = document.getElementById("out");
 
-  const data = await res.json();
+  if (!phone) {
+    out.innerHTML = "❌ Please enter phone number";
+    return;
+  }
 
-  document.getElementById("out").innerHTML =
-    "Your Customer ID: <b>" + data.id + "</b>";
+  try {
+    const res = await fetch("/api/register", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ phone })
+    });
+
+    const data = await res.json();
+
+    out.innerHTML = `
+      ✅ Registration successful<br>
+      Your Customer ID: <b>${data.id}</b>
+    `;
+  } catch (err) {
+    out.innerHTML = "❌ Error connecting to server";
+  }
 }
 </script>
 

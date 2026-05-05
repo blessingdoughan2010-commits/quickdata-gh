@@ -10,6 +10,7 @@ app.use(express.static("public"));
 
 const DB_FILE = "./db.json";
 
+/* ---------------- DB HELPERS ---------------- */
 function readDB() {
   return JSON.parse(fs.readFileSync(DB_FILE));
 }
@@ -18,13 +19,14 @@ function writeDB(data) {
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-/* ---------------- REGISTER ---------------- */
+/* ---------------- REGISTER CUSTOMER ---------------- */
 app.post("/api/register", (req, res) => {
   const db = readDB();
 
   const customer = {
     id: uuidv4().slice(0, 8).toUpperCase(),
-    phone: req.body.phone
+    phone: req.body.phone,
+    createdAt: new Date()
   };
 
   db.customers.push(customer);
@@ -33,7 +35,7 @@ app.post("/api/register", (req, res) => {
   res.json(customer);
 });
 
-/* ---------------- ORDER ---------------- */
+/* ---------------- CREATE ORDER ---------------- */
 app.post("/api/order", (req, res) => {
   const db = readDB();
 
@@ -43,14 +45,37 @@ app.post("/api/order", (req, res) => {
     network: req.body.network,
     amount: req.body.amount,
     price: req.body.amount + 1,
+
     status: "pending",
-    date: new Date()
+    paymentStatus: "unpaid",
+    createdAt: new Date()
   };
 
   db.orders.push(order);
   writeDB(db);
 
-  res.json(order);
+  res.json({
+    message: "Order received",
+    order
+  });
+});
+
+/* ---------------- PAYMENT VERIFY (MOCK READY) ---------------- */
+app.post("/api/payment/verify", (req, res) => {
+  const db = readDB();
+
+  const order = db.orders.find(o => o.id === req.body.orderId);
+  if (!order) return res.status(404).json({ error: "Order not found" });
+
+  order.paymentStatus = "paid";
+  order.status = "processing";
+
+  writeDB(db);
+
+  res.json({
+    message: "Payment confirmed",
+    order
+  });
 });
 
 /* ---------------- GET ORDERS ---------------- */
@@ -66,9 +91,29 @@ app.put("/api/order/:id", (req, res) => {
   if (!order) return res.status(404).json({ error: "Not found" });
 
   order.status = req.body.status;
+
   writeDB(db);
 
   res.json(order);
 });
 
-app.listen(PORT, () => console.log("QuickData GH Pro running"));
+/* ---------------- AUTOMATION ENGINE ---------------- */
+function processOrders() {
+  const db = readDB();
+
+  db.orders.forEach(order => {
+    if (order.paymentStatus === "paid" && order.status === "processing") {
+      order.status = "delivered";
+      console.log("✅ Auto delivered:", order.id);
+    }
+  });
+
+  writeDB(db);
+}
+
+setInterval(processOrders, 8000);
+
+/* ---------------- START SERVER ---------------- */
+app.listen(PORT, () => {
+  console.log("🚀 QuickData GH Business System running");
+});

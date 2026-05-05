@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Buy Data</title>
+  <title>Order</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<nav>
-  <a href="/">Home</a>
-</nav>
-
-<h2>Buy Data</h2>
+<h2>Place Order</h2>
 
 <input id="customerId" placeholder="Customer ID">
 <input id="network" placeholder="Network">
 <input id="amount" placeholder="Amount">
 
-<button onclick="order()">Place Order</button>
+<button onclick="order()">Submit</button>
 
 <p id="out"></p>
 
@@ -34,8 +30,7 @@ async function order() {
 
   const data = await res.json();
 
-  document.getElementById("out").innerHTML =
-    `Order placed ✔<br>Order ID: <b>${data.id}</b>`;
+  out.innerHTML = "Order created ✔<br>ID: <b>" + data.order.id + "</b>";
 }
 </script>
 
