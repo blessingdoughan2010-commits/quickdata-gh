@@ -15,7 +15,6 @@ nav a {
   color: white;
   margin: 10px;
   text-decoration: none;
-  font-weight: bold;
 }
 
 .container {
@@ -40,10 +39,6 @@ nav a {
   padding: 10px;
   border: none;
   color: white;
-  cursor: pointer;
   border-radius: 8px;
-}
-
-.btn:hover {
-  background: #00e676;
+  cursor: pointer;
 }
