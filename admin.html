@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Admin Panel</h2>
+
+<button onclick="load()">Load Orders</button>
+
+<div id="orders"></div>
+
+<script>
+async function load() {
+  const res = await fetch("/api/orders");
+  const data = await res.json();
+
+  orders.innerHTML = data.map(o => `
+    <div class="card">
+      <b>${o.id}</b><br>
+      ${o.status}<br>
+      <button onclick="update('${o.id}','delivered')">Mark Delivered</button>
+    </div>
+  `).join("");
+}
+
+async function update(id, status) {
+  await fetch("/api/order/" + id, {
+    method: "PUT",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ status })
+  });
+
+  load();
+}
+</script>
+
+</body>
+</html>

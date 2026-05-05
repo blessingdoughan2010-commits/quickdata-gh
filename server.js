@@ -10,7 +10,6 @@ app.use(express.static("public"));
 
 const DB_FILE = "./db.json";
 
-// helper
 function readDB() {
   return JSON.parse(fs.readFileSync(DB_FILE));
 }
@@ -19,14 +18,13 @@ function writeDB(data) {
   fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2));
 }
 
-// CREATE CUSTOMER ID
+/* ---------------- REGISTER ---------------- */
 app.post("/api/register", (req, res) => {
   const db = readDB();
 
   const customer = {
     id: uuidv4().slice(0, 8).toUpperCase(),
-    phone: req.body.phone,
-    created: new Date()
+    phone: req.body.phone
   };
 
   db.customers.push(customer);
@@ -35,20 +33,16 @@ app.post("/api/register", (req, res) => {
   res.json(customer);
 });
 
-// PLACE ORDER
+/* ---------------- ORDER ---------------- */
 app.post("/api/order", (req, res) => {
   const db = readDB();
 
-  const { customerId, network, amount } = req.body;
-
-  const price = amount + 1; // +1 GH markup
-
   const order = {
-    id: uuidv4().slice(0, 6),
-    customerId,
-    network,
-    amount,
-    price,
+    id: "ORD-" + uuidv4().slice(0, 6).toUpperCase(),
+    customerId: req.body.customerId,
+    network: req.body.network,
+    amount: req.body.amount,
+    price: req.body.amount + 1,
     status: "pending",
     date: new Date()
   };
@@ -59,12 +53,22 @@ app.post("/api/order", (req, res) => {
   res.json(order);
 });
 
-// GET ORDERS (admin use)
+/* ---------------- GET ORDERS ---------------- */
 app.get("/api/orders", (req, res) => {
-  const db = readDB();
-  res.json(db.orders);
+  res.json(readDB().orders);
 });
 
-app.listen(PORT, () => {
-  console.log(`QuickData GH running on port ${PORT}`);
+/* ---------------- UPDATE STATUS ---------------- */
+app.put("/api/order/:id", (req, res) => {
+  const db = readDB();
+
+  const order = db.orders.find(o => o.id === req.params.id);
+  if (!order) return res.status(404).json({ error: "Not found" });
+
+  order.status = req.body.status;
+  writeDB(db);
+
+  res.json(order);
 });
+
+app.listen(PORT, () => console.log("QuickData GH Pro running"));

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Status</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<h2>Order Status</h2>
+
+<button onclick="load()">Load Orders</button>
+
+<div id="list"></div>
+
+<script>
+async function load() {
+  const res = await fetch("/api/orders");
+  const data = await res.json();
+
+  list.innerHTML = data.map(o => `
+    <div class="card">
+      <b>${o.id}</b><br>
+      Status: ${o.status}<br>
+      Network: ${o.network}
+    </div>
+  `).join("");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Buy Data</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/">Home</a>
+</nav>
+
+<h2>Buy Data</h2>
+
+<input id="customerId" placeholder="Customer ID">
+<input id="network" placeholder="Network">
+<input id="amount" placeholder="Amount">
+
+<button onclick="order()">Place Order</button>
+
+<p id="out"></p>
+
+<script>
+async function order() {
+  const res = await fetch("/api/order", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      customerId: customerId.value,
+      network: network.value,
+      amount: Number(amount.value)
+    })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("out").innerHTML =
+    `Order placed ✔<br>Order ID: <b>${data.id}</b>`;
+}
+</script>
+
+</body>
+</html>

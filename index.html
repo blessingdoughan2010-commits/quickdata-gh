@@ -6,24 +6,20 @@
 </head>
 <body>
 
-<h1>📡 QuickData GH</h1>
+<nav>
+  <a href="/">Home</a>
+  <a href="/register.html">Register</a>
+  <a href="/order.html">Buy Data</a>
+  <a href="/status.html">Status</a>
+  <a href="/admin.html">Admin</a>
+</nav>
 
-<div class="card">
-  <h2>Register</h2>
-  <input id="phone" placeholder="Enter phone number">
-  <button onclick="register()">Get Customer ID</button>
-  <p id="cid"></p>
+<div class="hero">
+  <h1>📡 QuickData GH</h1>
+  <p>Fast & Reliable Data Services in Ghana</p>
+
+  <a class="btn" href="/register.html">Get Started</a>
 </div>
 
-<div class="card">
-  <h2>Buy Data</h2>
-  <input id="customerId" placeholder="Customer ID">
-  <input id="network" placeholder="Network (MTN, Telecel, AT)">
-  <input id="amount" placeholder="Amount (GH₵)">
-  <button onclick="order()">Place Order</button>
-  <p id="result"></p>
-</div>
-
-<script src="app.js"></script>
 </body>
 </html>

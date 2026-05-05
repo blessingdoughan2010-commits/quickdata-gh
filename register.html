@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Register</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<nav>
+  <a href="/">Home</a>
+</nav>
+
+<h2>Register</h2>
+
+<input id="phone" placeholder="Enter phone">
+<button onclick="register()">Get ID</button>
+
+<p id="out"></p>
+
+<script>
+async function register() {
+  const res = await fetch("/api/register", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ phone: phone.value })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("out").innerHTML =
+    "Your Customer ID: <b>" + data.id + "</b>";
+}
+</script>
+
+</body>
+</html>
